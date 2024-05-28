@@ -23,11 +23,13 @@
 		k_0 = convert( AbstractFloat, k_0 ) ;
 		k_1 = convert( AbstractFloat, k_1 ) ;
 		a = convert( AbstractFloat, a ) ;
-		const Theta = linspace( 0, 2*pi , grid_size ); 
-		const Pat = zeros( Complex128, grid_size, 1);	
-		const g = 1/rho_10 ; # rho/rho1 ( 'g^(-1)' with the usual 'g' in scattering theory )
-		const x = k_0*a ;
-		const x1 = k_1*a ; 
+		#Theta = linspace( 0, 2*pi , grid_size );
+		Theta = range( 0, stop=2*pi , length=grid_size );
+		#Pat = zeros( Complex128, grid_size, 1);
+		Pat = zeros( ComplexF64, grid_size, 1);
+		g = 1/rho_10 ; # rho/rho1 ( 'g^(-1)' with the usual 'g' in scattering theory )
+		x = k_0*a ;
+		x1 = k_1*a ;
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 	Main loop ( angles )
@@ -45,7 +47,7 @@
 			Pat[ j ] = -1/k_0*acumulator ; # Normalization
 		end
 		
-		return [ Theta  map( Float64, abs( Pat ) ) ] ;
+		return [ Theta  map( Float64, abs.( Pat ) ) ] ;
 	end 
 	
 	
@@ -89,30 +91,30 @@
 		
 		# Derived parameters
 		
-		const Size = round( Int64, (M+1)*(M+2)/2 ) ;   
-		const d = 2*sqrt( a^2 - b^2 ) ;	
-		const xi_0 = 1/sqrt( 1 - (b/a)^2 ) ; # Prolate
-		const c_0 = ( d/2 )*k_0 ;
-		const c_1 = ( d/2 )*k_1 ;		
+		Size = round( Int64, (M+1)*(M+2)/2 ) ;
+		d = 2*sqrt( a^2 - b^2 ) ;
+		xi_0 = 1/sqrt( 1 - (b/a)^2 ) ; # Prolate
+		c_0 = ( d/2 )*k_0 ;
+		c_1 = ( d/2 )*k_1 ;
 		
 		# Structure declaration
 		
-		const Amn = zeros( Complex{BigFloat}, Size, 1) ;
-		const Bmn = zeros( Complex{BigFloat}, Size, 1) ;
-		const S1 = zeros( BigFloat, Size, 1) ;
-		const S1_1 = zeros( BigFloat, Size, 1) ;
-		const R1_0 = zeros( BigFloat, Size, 1) ;
-		const R1p_0 = zeros( BigFloat, Size, 1) ;
-		const R1_1 = zeros( BigFloat, Size, 1) ;
-		const R1p_1 = zeros( BigFloat, Size, 1) ;
-		const R3_0 = zeros( Complex{BigFloat}, Size, 1) ;	
-		const R3p_0 = zeros( Complex{BigFloat}, Size, 1) ;
-		const R3_1 = zeros( Complex{BigFloat}, Size, 1) ;	
-		const R3p_1 = zeros( Complex{BigFloat}, Size, 1) ;
-		const Alpha = zeros( BigFloat, M + 1, M + 1 ) ;
+		Bmn = zeros( Complex{BigFloat}, Size, 1) ;
+		S1 = zeros( BigFloat, Size, 1) ;
+		S1_1 = zeros( BigFloat, Size, 1) ;
+		Amn = zeros( Complex{BigFloat}, Size, 1) ;
+		R1_0 = zeros( BigFloat, Size, 1) ;
+		R1p_0 = zeros( BigFloat, Size, 1) ;
+		R1_1 = zeros( BigFloat, Size, 1) ;
+		R1p_1 = zeros( BigFloat, Size, 1) ;
+		R3_0 = zeros( Complex{BigFloat}, Size, 1) ;
+		R3p_0 = zeros( Complex{BigFloat}, Size, 1) ;
+		R3_1 = zeros( Complex{BigFloat}, Size, 1) ;
+		R3p_1 = zeros( Complex{BigFloat}, Size, 1) ;
+		Alpha = zeros( BigFloat, M + 1, M + 1 ) ;
 	
-		const Norm0 = zeros(BigFloat, Size, 1) ; # 25-2-2016
-		const Norm1 = zeros(BigFloat, Size, 1) ; # 25-2-2016		
+		Norm0 = zeros(BigFloat, Size, 1) ; # 25-2-2016
+		Norm1 = zeros(BigFloat, Size, 1) ; # 25-2-2016
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 	Smn, Rmn calculation (Adelman-Gumerov-Duraiswami software)
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
@@ -166,7 +168,7 @@
 			# Alpha matrix calculation
 			for i = 1 : TAM # fill in the rows
 				sigma = m + i - 1;
-				name = @ sprintf("%08d_%03d_%03d", trunc(Int,c_0*1000), m, sigma );
+				name = @sprintf("%08d_%03d_%03d", trunc(Int,c_0*1000), m, sigma );
 				pro_lambdamn_approx( c_0, m, sigma ) ;
 				run(`pro_sphwv_dr.N.bat $c_0 $m $sigma $name`) ;
 				#Norm0 = ReadFileToArrayBF( "Out_S_N.dat", '\n', 1) ;
@@ -174,7 +176,7 @@
 				DR_0 = ReadFileToArrayBF( "Out_dr.dat", '\n', 0) ;
 				for j = 1 : TAM # fill in the columns
 					n = m + j - 1;
-					name = @ sprintf("%08d_%03d_%03d", trunc(Int,c_1*1000), m, n );
+					name = @sprintf("%08d_%03d_%03d", trunc(Int,c_1*1000), m, n );
 					pro_lambdamn_approx( c_1, m, n ) ;
 					run(`pro_sphwv_dr.N.bat $c_1 $m $n $name`) ;
 					# Norm1 = ReadFileToArrayBF( "Out_S_N.dat", '\n', 1) ;
@@ -267,17 +269,18 @@
 		convert( AbstractFloat, deta ) ;
 		
 		# Derived parameters
-		const size = map( Int64, (M+1)*(M+2)/2 ); 	
-		const xi_0 = 1/sqrt( 1 - (b/a)^2 ) ;		
-		const d = 2*sqrt( a^2 - b^2 );
-		const c_0 = (d/2)*k_0 ;
+		size = map( Int64, (M+1)*(M+2)/2 );
+		xi_0 = 1/sqrt( 1 - (b/a)^2 ) ;
+		d = 2*sqrt( a^2 - b^2 );
+		c_0 = (d/2)*k_0 ;
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		#	Smn calculations
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 		
-		const Smn = cell( 1, size ); # Structure for Smn(eta) indexed by 'idx'
-		const Smn_inc = zeros( BigFloat, size, 1 ); # Vector for Smn(eta_inc) 
+		#Smn = zeros( BigFloat, 1, size ); # Structure for Smn(eta) indexed by 'idx'
+		Smn = Array{Array{BigFloat,1}, 1}(undef, size); # Structure for Smn(eta) indexed by 'idx'
+		Smn_inc = zeros( BigFloat, size, 1 ); # Vector for Smn(eta_inc)
 		
 		for i = 1 : M + 1 # 'm' loop
 			for j = i : M + 1  # 'n' loop
@@ -298,18 +301,18 @@
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~		
 		
 		# Theta grid
-		const ETAsize = length(ETA) ;
-		const TETA = map( acos, ETA ); 
-		const TETA2 = zeros( Float64, ETAsize - 1, 1 );
+		ETAsize = length(ETA) ;
+		TETA = map( acos, ETA );
+		TETA2 = zeros( Float64, ETAsize - 1, 1 );
 		for k = 1 : ETAsize - 1 
 			TETA2[k] = pi + TETA[k+1];
 		end	
 		
-		const Pat = zeros( Complex{BigFloat}, 2*ETAsize-1, 1);		
+		Pat = zeros( Complex{BigFloat}, 2*ETAsize-1, 1);
 		
-		const Phi = [ 0, pi ]; # Only two values for Phi
-		const Emn = cell( 1, length(Phi) ); # Emn: neumann_factor*cos( m(pi) )
-		
+		Phi = [ 0, pi ]; # Only two values for Phi
+		#Emn = zeros( BigFloat, 1, length(Phi) ); # Emn: neumann_factor*cos( m(pi) )
+		Emn = Array{Matrix{Float64}, 1}(undef, length(Phi)); # Emn: neumann_factor*cos( m(pi) )
 		# Fill in Emn
 		for k = 1 : length(Phi)
 			temp = zeros( Float64, size, 1 ) ; 
@@ -341,7 +344,7 @@
 		end
 		
 		# Outputting far-field absolute value
-		return [ [TETA ; TETA2] map( Float64, abs( Pat ) ) ] ;
+		return [ [TETA ; TETA2] map( Float64, abs.( Pat ) ) ] ;
 	end  	
 	
 
@@ -385,30 +388,30 @@
 		
 		# Derived parameters
 		
-		const Size = round( Int64,(M+1)*(M+2)/2 ) ;
-		const d = 2*sqrt( a^2 - b^2 ) ;	
-		const xi_0 = 1/sqrt( (a/b)^2 - 1 ) ; # Oblate
-		const c_0 = (d/2)*k_0 ;
-		const c_1 = (d/2)*k_1 ;		
+		Size = round( Int64,(M+1)*(M+2)/2 ) ;
+		d = 2*sqrt( a^2 - b^2 ) ;
+		xi_0 = 1/sqrt( (a/b)^2 - 1 ) ; # Oblate
+		c_0 = (d/2)*k_0 ;
+		c_1 = (d/2)*k_1 ;
 		
 		# Structure declaration
 		
-		const Amn = zeros(Complex{BigFloat}, Size, 1) ;
-		const Bmn = zeros(Complex{BigFloat}, Size, 1) ;
-		const S1 = zeros(BigFloat, Size, 1) ;
-		const S1_1 = zeros(BigFloat, Size, 1) ;
-		const R1_0 = zeros(BigFloat, Size, 1) ;
-		const R1p_0 = zeros(BigFloat, Size, 1) ;
-		const R1_1 = zeros(BigFloat, Size, 1) ;
-		const R1p_1 = zeros(BigFloat, Size, 1) ;
-		const R3_0 = zeros(Complex{BigFloat}, Size, 1) ;	
-		const R3p_0 = zeros(Complex{BigFloat}, Size, 1) ;
-		const R3_1 = zeros(Complex{BigFloat}, Size, 1) ;	
-		const R3p_1 = zeros(Complex{BigFloat}, Size, 1) ;
-		const Alpha = zeros( BigFloat, M + 1, M + 1 ) ;
+		Amn = zeros(Complex{BigFloat}, Size, 1) ;
+		Bmn = zeros(Complex{BigFloat}, Size, 1) ;
+		S1 = zeros(BigFloat, Size, 1) ;
+		S1_1 = zeros(BigFloat, Size, 1) ;
+		R1_0 = zeros(BigFloat, Size, 1) ;
+		R1p_0 = zeros(BigFloat, Size, 1) ;
+		R1_1 = zeros(BigFloat, Size, 1) ;
+		R1p_1 = zeros(BigFloat, Size, 1) ;
+		R3_0 = zeros(Complex{BigFloat}, Size, 1) ;
+		R3p_0 = zeros(Complex{BigFloat}, Size, 1) ;
+		R3_1 = zeros(Complex{BigFloat}, Size, 1) ;
+		R3p_1 = zeros(Complex{BigFloat}, Size, 1) ;
+		Alpha = zeros( BigFloat, M + 1, M + 1 ) ;
 
-		const Norm0 = zeros(BigFloat, Size, 1) ; # 25-2-2016
-		const Norm1 = zeros(BigFloat, Size, 1) ; # 25-2-2016
+		Norm0 = zeros(BigFloat, Size, 1) ; # 25-2-2016
+		Norm1 = zeros(BigFloat, Size, 1) ; # 25-2-2016
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 	Smn, Rmn calculation (Adelman-Duraiswami-Gumerov software)
@@ -463,7 +466,7 @@
 			# Alpha matrix calculation
 			for i = 1 : TAM # fill in the rows
 				sigma = m + i - 1;
-				name = @ sprintf("%08d_%03d_%03d", trunc(Int,c_0*1000), m, sigma );
+				name = @sprintf("%08d_%03d_%03d", trunc(Int,c_0*1000), m, sigma );
 				obl_lambdamn_approx( c_0, m, sigma ) ;
 				run( `obl_sphwv_dr.N.bat $c_0 $m $sigma $name` );
                                 # Norm0 = ReadFileToArrayBF( "Out_S_N.dat", '\n', 1) ;
@@ -472,7 +475,7 @@
 				# Ciclo de 'j' 
 				for j = 1 : TAM # fill in the columns
 					n = m + j - 1;
-					name = @ sprintf("%08d_%03d_%03d", trunc(Int,c_1*1000), m, n );
+					name = @sprintf("%08d_%03d_%03d", trunc(Int,c_1*1000), m, n );
 					obl_lambdamn_approx( c_1, m, n ) ;
 					run( `obl_sphwv_dr.N.bat $c_1 $m $n $name` ) ;
                                         # Norm1 = ReadFileToArrayBF( "Out_S_N.dat", '\n', 1) ;
@@ -563,17 +566,18 @@
 		convert( AbstractFloat, deta ) ;
 		
 		# Derived parameters
-		const size = map( Int64, (M+1)*(M+2)/2 ); 	
-		const xi_0 = 1/sqrt( (a/b)^2 - 1 ) ;
-		const d = 2*sqrt( a^2 - b^2 );
-		const c_0 = (d/2)*k_0 ;
+		size = map( Int64, (M+1)*(M+2)/2 );
+		xi_0 = 1/sqrt( (a/b)^2 - 1 ) ;
+		d = 2*sqrt( a^2 - b^2 );
+		c_0 = (d/2)*k_0 ;
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		#	Smn calculations
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 		
-		const Smn = cell( 1, size ); # Structure for Smn(eta) indexed by 'idx'
-		const Smn_inc = zeros( BigFloat, size, 1 ); # Vector for Smn(eta_inc) 
+		#Smn = zeros( BigFloat, 1, size ); # Structure for Smn(eta) indexed by 'idx'
+		Smn = Array{Array{BigFloat,1}, 1}(undef, size); # Structure for Smn(eta) indexed by 'idx'
+		Smn_inc = zeros( BigFloat, size, 1 ); # Vector for Smn(eta_inc)
 		
 		for i = 1 : M + 1 # 'm' loop
 			for j = i : M + 1  # 'n' loop
@@ -594,17 +598,18 @@
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~		
 		
 		# Theta grid
-		const ETAsize = length(ETA) ;
-		const TETA = map( acos, ETA ); 
-		const TETA2 = zeros( Float64, ETAsize - 1, 1 );
+		ETAsize = length(ETA) ;
+		TETA = map( acos, ETA );
+		TETA2 = zeros( Float64, ETAsize - 1, 1 );
 		for k = 1 : ETAsize - 1 
 			TETA2[k] = pi + TETA[k+1];
 		end	
 		
-		const Pat = zeros( Complex{BigFloat}, 2*ETAsize-1, 1);
+		Pat = zeros( Complex{BigFloat}, 2*ETAsize-1, 1);
 		
-		const Phi = [ 0, pi ];  # Only two values for Phi
-		const Emn = cell( 1, length(Phi) ); # Emn: neumann_factor*cos( m(pi) )
+		Phi = [ 0, pi ];  # Only two values for Phi
+		#Emn = zeros( BigFloat, 1, length(Phi) ); # Emn: neumann_factor*cos( m(pi) )
+		Emn = Array{Matrix{Float64}, 1}(undef, length(Phi)); # Emn: neumann_factor*cos( m(pi) )
 		
  		# Fill in Emn
 		for k = 1 : length(Phi)
@@ -637,7 +642,7 @@
 		end
 		
 		# Outputting far-field absolute value
-		return [ [TETA ; TETA2] map( Float64, abs( Pat ) ) ] ;
+		return [ [TETA ; TETA2] map( Float64, abs.( Pat ) ) ] ;
 	end  	
 	
 
@@ -675,17 +680,17 @@
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 		
 		# Derived parameters
-		const Size = round( Int64, (M+1)*(M+2)/2 );  
-		const d = 2*sqrt( a^2 - b^2 ) ;	
-		const xi_0 = 1/sqrt( 1 - (b/a)^2 ) ; # Prolate	
-		const c_0 = ( d/2 )*k_0 ;
+		Size = round( Int64, (M+1)*(M+2)/2 );
+		d = 2*sqrt( a^2 - b^2 ) ;
+		xi_0 = 1/sqrt( 1 - (b/a)^2 ) ; # Prolate
+		c_0 = ( d/2 )*k_0 ;
 		
 		# Structure declaration
-		const Amn = zeros( Complex{BigFloat}, Size, 1) ;
-		const R1_0 = zeros( BigFloat, Size, 1) ;
-		const R1p_0 = zeros( BigFloat, Size, 1) ;
-		const R3_0 = zeros( Complex{BigFloat}, Size, 1) ;	
-		const R3p_0 = zeros( Complex{BigFloat}, Size, 1) ;
+		Amn = zeros( Complex{BigFloat}, Size, 1) ;
+		R1_0 = zeros( BigFloat, Size, 1) ;
+		R1p_0 = zeros( BigFloat, Size, 1) ;
+		R3_0 = zeros( Complex{BigFloat}, Size, 1) ;
+		R3p_0 = zeros( Complex{BigFloat}, Size, 1) ;
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 	Rmn calculation (Adelman-Duraiswami-Gumerov software)
@@ -774,17 +779,17 @@
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
 		
 		# Derived parameters
-		const Size = round( Int64,(M+1)*(M+2)/2 ); 
-		const d = 2*sqrt(a^2 - b^2) ;	# Oblate
-		const xi_0 = 1/sqrt((a/b)^2-1) ;
-		const c_0 = (d/2)*k_0 ;
+		Size = round( Int64,(M+1)*(M+2)/2 );
+		d = 2*sqrt(a^2 - b^2) ;	# Oblate
+		xi_0 = 1/sqrt((a/b)^2-1) ;
+		c_0 = (d/2)*k_0 ;
 		
 		# Structure declaration
-		const Amn = zeros(Complex{BigFloat}, Size, 1) ;
-		const R1_0 = zeros(BigFloat, Size, 1) ;
-		const R1p_0 = zeros(BigFloat, Size, 1) ;
-		const R3_0 = zeros(Complex{BigFloat}, Size, 1) ;	
-		const R3p_0 = zeros(Complex{BigFloat}, Size, 1) ;
+		Amn = zeros(Complex{BigFloat}, Size, 1) ;
+		R1_0 = zeros(BigFloat, Size, 1) ;
+		R1p_0 = zeros(BigFloat, Size, 1) ;
+		R3_0 = zeros(Complex{BigFloat}, Size, 1) ;
+		R3p_0 = zeros(Complex{BigFloat}, Size, 1) ;
 		
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 	Rmn calculation (Adelman-Duraiswami-Gumerov software)

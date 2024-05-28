@@ -7,6 +7,11 @@
 	
 	# GNU Scientific Library
 	using GSL ;
+	using Printf ;
+	using LinearAlgebra ;
+	using DelimitedFiles ;
+	using LegacyStrings ;
+	using SpecialFunctions ;
 	
 	# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	#	Special functions related
@@ -89,8 +94,8 @@
 	function pro_lambdamn_approx( c::Any, m::Int64, n::Int64 )
 		# Transcription to Julia of the AGD MATLAB code.
 		convert( Float64, c ) ;
-		const N = m + n + 200 ; # Size of the matrix
-		const A = zeros( Float64, N, N ) ;
+		N = m + n + 200 ; # Size of the matrix
+		A = zeros( Float64, N, N ) ;
 		if ( mod( n - m, 2) == 0 )
 			r = 0 ; # even
 		else
@@ -111,13 +116,13 @@
 			end
 			r = r + 2;
 		end
-		const d = eigvals!(A);
+		d = eigvals(A);
 		if ( mod(n - m, 2) == 0 )
-			const lambda_approx = real(d[ Int( (n - m + 2) / 2 ) ]) ;
+			lambda_approx = real(d[ Int( (n - m + 2) / 2 ) ]) ;
 		else
-			const lambda_approx = real(d[ Int( (n - m + 1) / 2 ) ]) ;
+			lambda_approx = real(d[ Int( (n - m + 1) / 2 ) ]) ;
 		end
-		filename = @ sprintf("data/pro_%08d_%03d_%03d_lambda_approx.txt", trunc( Int, c*1000 ), m, n ) ;
+		filename = @sprintf("data/pro_%08d_%03d_%03d_lambda_approx.txt", trunc( Int, c*1000 ), m, n ) ;
 		writedlm( filename,lambda_approx );
 	end
 	
@@ -138,8 +143,8 @@
 	function obl_lambdamn_approx( c::Any, m::Int64, n::Int64 )
 		# Transcription to Julia of the AGD MATLAB code.
 		convert( Float64, c ) ;
-		const N = m + n + 200 ; # Size of the matrix
-		const A = zeros( Float64, N, N ) ;
+		N = m + n + 200 ; # Size of the matrix
+		A = zeros( Float64, N, N ) ;
 		if ( mod( n - m, 2) == 0 )
 			r = 0 ; # even
 		else
@@ -160,13 +165,13 @@
 			end
 			r = r + 2;
 		end
-		const d = eigvals!(A);
+		d = eigvals(A);
 		if ( mod( n - m, 2 ) == 0 )
-			const lambda_approx = real(d[ Int( (n - m + 2) / 2 ) ]) ;
+			lambda_approx = real(d[ Int( (n - m + 2) / 2 ) ]) ;
 		else
-			const lambda_approx = real(d[ Int( (n - m + 1) / 2 ) ]) ;
+			lambda_approx = real(d[ Int( (n - m + 1) / 2 ) ]) ;
 		end
-		filename = @ sprintf("data/obl_%08d_%03d_%03d_lambda_approx.txt", trunc( Int, c*1000 ), m, n ) ;
+		filename = @sprintf("data/obl_%08d_%03d_%03d_lambda_approx.txt", trunc( Int, c*1000 ), m, n ) ;
 		writedlm( filename,lambda_approx );
 	end	
 	
