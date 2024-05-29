@@ -10,6 +10,7 @@
     b = 0.01 ; # Minor semiaxis spheroid
 	theta_inc = pi/2 ; # Incidence angle in radians
 	theta_incdeg= round(Int,180*theta_inc/pi);
+	sound_vel = 1500.0
 	# Software parameters
 	m = 4 ;
 	n = 8 ;
@@ -33,13 +34,16 @@
     #size_scales = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8]
     size_scales = [7.5]
 
+    dir = "Smn_files"
+    mkpath(dir)
+
     for scale in size_scales
         a_scaled = a * scale
         b_scaled = b * scale
-        Pattern = IncidentWave_Pro_Smn_vs_eta(a_scaled, b_scaled, m, n, f, method, eta_inc, delta_eta)
+        Pattern = IncidentWave_Pro_Smn_vs_eta(a_scaled, b_scaled, m, n, f, method, eta_inc, delta_eta, sound_vel)
 
         # Saving to disk
-        fileName = string("Test_angular_pro_f_",f_kHz,"a_",a_scaled,"_b_",b_scaled,"_m_",m,"_n_",n,"_inc_",theta_incdeg,"_", precision, ".dat");
+        fileName = string(dir, "/Test_angular_pro_f_",f_kHz,"a_",a_scaled,"_b_",b_scaled,"_m_",m,"_n_",n,"_inc_",theta_incdeg,"_", precision, ".dat");
         writedlm(fileName, Pattern , '\t' ) ;
     end
 

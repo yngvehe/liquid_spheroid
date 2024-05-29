@@ -51,6 +51,9 @@
 	# Conversion theta to eta
 	eta_inc = cos( theta_inc ) ;
 
+    dir = "Rmn_files"
+    mkpath(dir)
+
     asp_ratio = a / b
     for hh in h
         for nn in n
@@ -61,7 +64,7 @@
 
             # Saving to disk
             #fileName = string("Test_pro_f_",f_kHz,"_a_",a,"_b_",b,"_m_",m,"_n_",n,"_inc_",theta_incdeg,"_", precision, ".dat");
-            fileName = string("Rmn_xi_c_",hh,"_asp_ratio_",asp_ratio,"_m_",(m-1),"_n_",(nn-1),".dat");
+            fileName = string(dir, "/Rmn_xi_c_",hh,"_asp_ratio_",asp_ratio,"_m_",(m-1),"_n_",(nn-1),".dat");
             writedlm(fileName, Pattern , '\t' ) ;
         end
     end

@@ -219,12 +219,7 @@ JUL_Crimac_test:
 
 		k = 2* pi * f / c
 		c_0 = ( d/2 )*k
-		pro_lambdamn_approx( c_0, m-1, n-1 ) ;
-		sigma = n - m;
-        name = @sprintf("%08d_%03d_%03d", trunc(Int,c_0*1000), (m-1), sigma );
-		run(`pro_sphwv_dr.N.bat $c_0 $(m-1) $sigma $name`) ;
-		DR_0 = ReadFileToArrayBF( "Out_dr.dat", '\n', 0) ;
-		println("len(DR)=",length(DR_0))
+
 		run(`pro_sphwv_Sgrid.Sinc.bat $c_0 $(m-1) $(n-1) $eta_inc $deta`);
 		ETA = reverse( readdlm( "Out_S.dat",',','\n')[:,2] ) ;
 		Smn = reverse( ReadFileToArrayBF2( "Out_S.dat", ',', :, 5 ) ) ;
